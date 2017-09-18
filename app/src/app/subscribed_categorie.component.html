@@ -1,0 +1,15 @@
+<style>
+  .btn-c:hover {
+    background-color: #f2f2f2;
+  }
+</style>
+<div style="padding:10px;">
+  <label style="width: 20%; margin: 0 auto;" class="control-label col-sm-5"><label style="color:#366cc1;">{{categorie.categorie}}</label> - add skill:</label>
+  <div style="width: 20%; margin: 0 auto;" class="col-sm-4">
+    <input class="form-control" type="text" maxlength="40" #addskill>
+  </div>
+  <button style="width: 10%; margin: 0 auto;" type="button" class="btn btn-c" (click)="addNewSkill()">Add skill</button>
+  <label style="margin: 0 auto; background:#366cc1; color: white; border: 2px solid #ffffff; border-radius: 20%; padding-left:10px;padding-right:10px; padding-top:6px;padding-bottom:6px;" *ngFor="let skill of categorie.skills">
+    {{skill}}
+  </label>
+</div>

@@ -1,0 +1,237 @@
+<style>
+  .sebm-google-map-container {
+    height: 200px;
+  }
+
+  .btn-c:hover {
+    background-color: #f2f2f2;
+  }
+
+  .pendingJobs {
+      background-color: #f2f2f2;
+  }
+
+  .pulse {
+    float:right;
+  display: block;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #cc0000;
+  cursor: pointer;
+  box-shadow: 0 0 0 rgba(255, 26, 26, 0.4);
+  animation: pulse 2s infinite;
+}
+.pulse:hover {
+  animation: none;
+}
+
+@-webkit-keyframes pulse {
+  0% {
+    -webkit-transform: scale(0.8, 0.8);
+    -webkit-box-shadow: 0 0 0 0 rgba(255, 26, 26, 0.4);
+  }
+  70% {
+      -webkit-transform: scale(0.8, 0.8);
+      -webkit-box-shadow: 0 0 0 10px rgba(255, 26, 26, 0.4);
+  }
+  100% {
+      -webkit-transform: scale(0.8, 0.8);
+      -webkit-box-shadow: 0 0 0 0 rgba(255, 26, 26, 0.4);
+  }
+}
+@keyframes pulse {
+  0% {
+    -webkit-transform: scale(0.8, 0.8);
+    -moz-box-shadow: 0 0 0 0 rgba(255, 26, 26, 0.4);
+    box-shadow: 0 0 0 0 rgba(255, 26, 26, 0.4);
+  }
+  70% {
+      -webkit-transform: scale(0.8, 0.8);
+      -moz-box-shadow: 0 0 0 10px rgba(255, 26, 26, 0.4);
+      box-shadow: 0 0 0 10px rgba(255, 26, 26, 0.4);
+  }
+  100% {
+      -webkit-transform: scale(0.8, 0.8);
+      -moz-box-shadow: 0 0 0 0 rgba(255, 26, 26, 0.4);
+      box-shadow: 0 0 0 0 rgba(255, 26, 26, 0.4);
+  }
+}
+</style>
+<modal #notificationsModal>
+  <modal-header [show-close]="true">
+    <h4 class="modal-title">Update notification</h4>
+  </modal-header>
+  <modal-body>
+    {{notification}}
+  </modal-body>
+  <modal-footer>
+    <button type="button" class="btn btn-c" (click)="notificationsModal.close()">Close</button>
+  </modal-footer>
+</modal>
+
+<modal #offersModal>
+  <modal-header [show-close]="true">
+    <h4 *ngIf="modalOffersType == 1" class="modal-title">My public offers</h4>
+    <h4 *ngIf="modalOffersType == 0" class="modal-title">My accepted public offers</h4>
+  </modal-header>
+  <modal-body>
+    <div class="pre-scrollable">
+      <div *ngIf="offers.length == 0">
+        <div *ngIf="modalOffersType == 1">
+          You haven't made any offers yet
+        </div>
+        <div *ngIf="modalOffersType == 0">
+          None of your offers were accepted
+        </div>
+      </div>
+      <div class="list-group" *ngFor="let offer of offers">
+        <offer [data]="offer"></offer>
+      </div>
+    </div>
+  </modal-body>
+  <modal-footer>
+    <button type="button" class="btn btn-c" (click)="offersModal.close()">Close</button>
+  </modal-footer>
+</modal>
+
+<div class="row" *ngIf="!registeredPovprasevalec">
+  <div class="col-sm-1">
+  </div>
+  <div class="col-sm-10">
+    <div class="outer">
+      <div class="inner">
+        <div class="container-fluid" style="border-radius: 25px; background: white;">
+          <form class="form-horizontal">
+            <h2>Fill in your data</h2>
+            <hr>
+            <div class="form-group">
+              <label class="control-label col-sm-2">Bio: </label>
+              <div class="col-sm-8">
+                <textarea class="form-control" cols="40" rows="5" #bio></textarea>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2">Summary bio: </label>
+              <div class="col-sm-8">
+                <input class="form-control" type="text" #summarybio><br>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2">Categorie: </label>
+              <div class="col-sm-4">
+                <select class="form-control" #newsubscribecategorie>
+                  <option *ngFor="let categorie of categories">
+                    {{categorie.name}}
+                  </option>
+                </select>
+
+              </div>
+              <div class="col-sm-2">
+                <button type="button" class="btn btn-c" (click)="addSubscribedCategorie()">Add categorie</button>
+              </div>
+              <div class="col-sm-2 text-right">
+                <button type="button" class="btn btn-primary" (click)="submitPovprasevalecForm()">Submit</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-12 text-left" *ngFor="let categorie of new_subscribed_categories; let i = index">
+                <subscribedcategorie [data]=categorie></subscribedcategorie>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row" *ngIf="registeredPovprasevalec">
+  <div class="col-sm-1">
+  </div>
+  <div class="col-sm-10">
+    <div class="outer">
+      <div class="inner">
+        <div class="container-fluid" style="border-radius: 25px; background-color: rgba(255, 255, 255, 0.7);">
+          <form class="form-horizontal">
+            <h2>
+              <div class="col-sm-5" *ngIf="public_or_private_jobs">Browse jobs</div>
+              <div class="col-sm-5" *ngIf="!public_or_private_jobs">Browse received jobs</div>
+              <div style="text-align:right;">
+                <button type="button" style="margin:5px;" class="btn btn-c" (click)="changeJobList()">{{job_list_mode}}<span *ngIf="job_list_mode == 'Received private jobs' && NumberOfPendingPrivateJobs > 0 && NumberOfPendingPrivateJobs != null">&nbsp;&nbsp;&nbsp;</span>
+                   <span class="pulse" style="color:white;" *ngIf="job_list_mode == 'Received private jobs' && NumberOfPendingPrivateJobs > 0 && NumberOfPendingPrivateJobs != null"><label>!</label></span>
+                </button>
+                <button style="margin:5px;" type="button" class="btn btn-c" (click)="allOffers()">My public offers</button>
+                <button style="margin:5px;" type="button" class="btn btn-c" (click)="acceptedOffers()">My accepted public offers</button>
+              </div>
+            </h2>
+            <hr>
+            <div *ngIf="!public_or_private_jobs" class="col-sm-2">
+            </div>
+            <ul class="form-group nav nav-pills nav-justified" *ngIf="public_or_private_jobs">
+              <li [ngClass]="{'active': selected_categorie == 'evrythng'}" (click)="getJobs()">
+                <a style="cursor: pointer;">All</a>
+              </li>
+              <li [ngClass]="{'active': selected_categorie == 'rcmmnd'}" (click)="categorieRecommendByMyStats()">
+                <a style="cursor: pointer;">Recommended Jobs</a>
+              </li>
+              <li *ngFor="let categorie of categories" [ngClass]="{'active': categorie.name == selected_categorie}" (click)="categoriesearchTag(categorie.name)">
+                <a style="cursor: pointer;">{{categorie.name}}</a>
+              </li>
+            </ul>
+            <div class="col-sm-9" *ngIf="!public_or_private_jobs">
+              <ul class="form-group nav nav-pills nav-justified" *ngIf="!public_or_private_jobs">
+                <li [ngClass]="{'active': mode == 'all'}" (click)="myprivatejobssearchTag('All received jobs')" #allreceivedjobs>
+                  <a style="cursor: pointer;">All received jobs</a>
+                </li>
+                <li [ngClass]="{'active': mode == 'accepted'}" (click)="myprivatejobssearchTag('Accepted received jobs')" #acceptedreceivedjobs>
+                  <a style="cursor: pointer;">Accepted received jobs</a>
+                </li>
+                <li [ngClass]="{'active': mode == 'pending'}" (click)="myprivatejobssearchTag('Pending received jobs')" #pendingreceivedjobs>
+                  <a [ngClass]="{'pendingJobs': NumberOfPendingPrivateJobs > 0 && NumberOfPendingPrivateJobs != null}" style="cursor: pointer;">Pending received jobs
+                    <span class="pulse" style="color:white;cursor: pointer;" *ngIf="NumberOfPendingPrivateJobs > 0 && NumberOfPendingPrivateJobs != null"><label style="cursor: pointer;">{{NumberOfPendingPrivateJobs}}</label></span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div *ngIf="!public_or_private_jobs" class="col-sm-2">
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="public_or_private_jobs">
+  <joblistpovprasevalec [jobs]=jobs [offers]=allow_offers></joblistpovprasevalec>
+</div>
+<div *ngIf="!public_or_private_jobs" style="height:100%;">
+  <private_joblistpovprasevalec [jobs]=private_received_jobs></private_joblistpovprasevalec>
+</div>
+<style>
+  #new_job_inner {
+    height: 90px;
+    width: 90px;
+    left: 91%;
+    top: 84%;
+    z-index: 2;
+    display: block;
+    position: fixed;
+    background-color: transparent;
+  }
+
+  #new_job_content {
+    font-size: 1.6em;
+    position: relative;
+    transform: translate(-50%, -50%);
+    left: 55%;
+    top: 52%;
+    background-color: transparent;
+  }
+</style>
+<!-- Fixed button -->
+<div data-toggle="modal" data-target="#myModal" id="new_job_inner" class="container-fluid">
+  <div id="new_job_content" class="container-fluid">
+    <a style="color:#366cc1;cursor: pointer;" (mouseenter)="mouseEnter()" (mouseleave)="mouseLeave()" onclick="scroll(0,0)"><span class="glyphicon glyphicon-chevron-up"></span></a>
+    <span *ngIf="upArrow">Up</span>
+  </div>
+</div>
