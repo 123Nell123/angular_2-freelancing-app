@@ -1,0 +1,419 @@
+<style>
+  .sebm-google-map-container {
+    height: 300px;
+  }
+
+  .btn-c:hover {
+    background-color: #f2f2f2;
+  }
+</style>
+
+
+<div class="row">
+  <div class="col-sm-1">
+  </div>
+  <div class="col-sm-10">
+    <div class="outer">
+      <div class="inner">
+        <div class="container-fluid" style="border-radius: 25px; background-color: rgba(255, 255, 255, 0.7);">
+          <form class="form-horizontal">
+            <h2>Post new job <button type="button" style="margin:5px;float:right;" class="btn btn-primary" (click)="showMyStats()">My stats</button></h2>
+            <hr>
+            <div class="form-group">
+              <label class="control-label col-sm-2">Title</label>
+              <div class="col-sm-8">
+                <input class="form-control" type="text" placeholder="New job title" #naslov>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2">Category</label>
+              <div class="col-sm-3">
+                <select class="form-control" #kategorija>
+                <option *ngFor="let categorie of categories">
+                 {{categorie.name}}
+                </option>
+              </select>
+              </div>
+              <label class="control-label col-sm-2">Location</label>
+              <div class="col-sm-3">
+                <input class="form-control" type="text" placeholder="Job location address" #lokacija>
+              </div>
+            </div>
+            <div class="form-group" *ngIf="allowMaps">
+              <div class="col-sm-2" style="text-align:right;">
+                <label>Move marker to set job location</label>
+              </div>
+              <div class="col-sm-8">
+                <sebm-google-map [latitude]="lat" [longitude]="lng">
+                  <sebm-google-map-marker [markerDraggable]="true" (dragEnd)="signUpLocation($event)" [latitude]="lat" [longitude]="lng"></sebm-google-map-marker>
+                </sebm-google-map>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2">Description</label>
+              <div class="col-sm-8">
+                <textarea placeholder="Short description of the job" class="form-control" style="resize: none;" rows="2" cols="20" #opis></textarea>
+              </div>
+            </div>
+            <div class="form-group" style="padding-top:10px;">
+              <div class="col-sm-6">
+                <label style="float:right;padding-right:50px;">Work begins on</label>
+              </div>
+              <div class="col-sm-2">
+                <label style="float:right;">Expires on</label>
+              </div>
+            </div>
+            <div style="width: 100%;text-align: center;">
+              <datetime style="display: inline-block;padding-right:20px;" (ngModelChange)="jobStartDateRangeCalculation($event)" [(ngModel)]="job_start_date" name="datetime1" [timepicker]="false" [datepicker]="datepickerOpts2"></datetime>
+              <datetime style="display: inline-block;padding-left:20px;" (ngModelChange)="expirationDateRangeCalculation($event)" [(ngModel)]="expire_date" name="datetime2" [timepicker]="false" [datepicker]="datepickerOpts1"></datetime>
+            </div>
+            <div class="form-group" style="padding-top:30px;">
+              <label class="control-label col-sm-2">Load image</label>
+              <div class="col-sm-5">
+                <input class="form-control" type="file" name="file_upload" multiple #fileupload>
+              </div>
+            </div>
+            <div class="col-md-2">
+            </div>
+            <div class="col-md-4">
+              <button type="button" style="margin:5px;" class="btn btn-c" (click)="submitNewJob()" #publicsubmitbutton>Public submit</button>
+              <button type="button" style="margin:5px;" class="btn btn-c" (click)="enterPrivateJobPrice()" #privatesubmitbutton>Private submit</button>
+            </div>
+            <div class="col-sm-1" *ngIf="selectUserVisible" style="padding:5px;">
+              <span style="margin:10px;float:right;cursor: pointer; cursor: hand;" (click)="closePrivateJobPrice()" class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+            </div>
+            <div class="col-sm-2" *ngIf="selectUserVisible" style="padding:5px;">
+              <input class="form-control" type="text" placeholder="Enter offered job price" #inputprice>
+            </div>
+            <div class="col-sm-3" *ngIf="selectUserVisible">
+              <button *ngIf="selectUserVisible" type="button" style="margin:5px;" class="btn btn-c" (click)="showUsersList()" #privatesubmitbutton>Select user</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-1">
+  </div>
+
+</div>
+<div class="row">
+  <div class="col-sm-1">
+  </div>
+  <div class="col-sm-10">
+    <div class="outer">
+      <div class="inner">
+        <div class="container-fluid" style="border-radius: 25px; background-color: rgba(255, 255, 255, 0.0);">
+          <h2><span *ngIf="public_or_private_jobs">Publicly posted jobs </span><span *ngIf="!public_or_private_jobs">Privatly posted jobs</span><button type="button" style="margin:5px;float:right;" class="btn btn-primary" (click)="changeJobList()">{{job_list_mode}}</button></h2>
+          <hr>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row" *ngIf="public_or_private_jobs">
+  <div class="col-sm-3">
+  </div>
+  <div class="col-sm-6 col-centered">
+    <div class="outer">
+      <div class="inner">
+        <div class="container-fluid" style="border-radius: 25px; background-color: rgba(255, 255, 255, 0.7);">
+          <form class="form-horizontal">
+            <ul class="form-group nav nav-pills nav-justified">
+              <li [ngClass]="{'active': mode == 'all'}" (click)="myjobssearchTag('All jobs')">
+                <a style="cursor: pointer;">All jobs</a>
+              </li>
+              <li [ngClass]="{'active': mode == 'accepted'}" (click)="myjobssearchTag('Accepted jobs')">
+                <a style="cursor: pointer;">Accepted jobs</a>
+              </li>
+              <li [ngClass]="{'active': mode == 'pending'}" (click)="myjobssearchTag('Pending jobs')">
+                <a style="cursor: pointer;">Pending jobs</a>
+              </li>
+          </ul>
+        </form>
+      </div>
+      </div>
+      </div>
+      </div>
+      <br><br><br>
+</div>
+<div *ngIf="public_or_private_jobs">
+  <joblistponudnik [jobs]="jobs" #joblist></joblistponudnik>
+</div>
+<div class="row" *ngIf="!public_or_private_jobs">
+  <div class="col-sm-3">
+  </div>
+  <div class="col-sm-6 col-centered">
+    <div class="outer">
+      <div class="inner">
+        <div class="container-fluid" style="border-radius: 25px; background-color: rgba(255, 255, 255, 0.0);">
+          <form class="form-horizontal">
+            <ul class="form-group nav nav-pills nav-justified">
+              <li [ngClass]="{'active': mode == 'all'}" (click)="myprivatejobssearchTag('All private jobs')">
+                <a style="cursor: pointer;">All private jobs</a>
+              </li>
+
+              <li [ngClass]="{'active': mode == 'accepted'}" (click)="myprivatejobssearchTag('Accepted private jobs')">
+                <a style="cursor: pointer;">Accepted private jobs</a>
+              </li>
+
+              <li [ngClass]="{'active': mode == 'pending'}" (click)="myprivatejobssearchTag('Pending private jobs')">
+                <a style="cursor: pointer;">Pending private jobs</a>
+              </li>
+            </ul>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="!public_or_private_jobs">
+  <private_joblistponudnik [jobs]="private_jobs"></private_joblistponudnik>
+</div>
+
+<modal #jobSendConformation>
+  <modal-header [show-close]="true">
+    <h4 class="modal-title">Conformation</h4>
+  </modal-header>
+  <modal-body>
+    <div class="row">
+      <div class="col-sm-12" style="text-align:center;">
+        <label>Job request was send to {{this.individualJobReceiversFullname}}.</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12" style="text-align:center;">
+        You will be notified about recipient's response as soon as possible.
+      </div>
+    </div>
+  </modal-body>
+  <modal-footer>
+    <button type="button" class="btn btn-c" (click)="jobSendConformation.close()">Close</button>
+  </modal-footer>
+</modal>
+
+<modal #usersListModal>
+  <modal-header [show-close]="true">
+    <h4 class="modal-title">All users</h4>
+  </modal-header>
+  <modal-body>
+    <div class="row">
+      <div class="col-sm-3" style="text-align:center;">
+        <h5>Find users by name or query:</h5>
+      </div>
+      <div class="col-sm-6">
+        <input class="form-control" type="text" placeholder="Enter user or query" #userssearch>
+      </div>
+      <div class="col-sm-1">
+        <h4 class="text-info">
+          <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" title='Example:
+-name=john -bio="wooden chair" -rating>1.4
+
+Supported labels:
+-name=
+-email=
+-location=
+-bio=
+-bioSummary=
+-rating =,>,<
+-ratingCount =,>,<
+-rating(category name) =,>,<
+-ratingCount(category name) =,>,<
+-projects =,>,<
+-limit='> </span>
+          <script>
+            $(document).ready(function () {
+              $('[data-toggle="tooltip"]').tooltip();
+            });
+          </script>
+        </h4>
+      </div>
+      <div class="col-sm-2" style="text-align:right;">
+        <button type="button" class="btn btn-c" (click)="searchForUsers()">Search</button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12">
+        <p class="text-danger">{{queryError}}</p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-3" style="text-align:center;">
+        <h5>Search by categories:</h5>
+      </div>
+      <div class="col-sm-6">
+        <select class="form-control" #searchUsersByCategorie (change)="searchUsersByCategorieFunction($event.target.value)">
+						<option *ngFor="let categorie of categories">
+							{{categorie.name}}
+						</option>
+					</select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-8">
+        <ul *ngIf="recommendedUsersVisible" class="list-group">
+          <li class="list-group-item" *ngFor="let user of recommendedUsers">
+            {{user.fullname}}
+          </li>
+        </ul>
+      </div>
+      <!-- ne potrebujemo trenutno tega
+      <div class="col-sm-2">
+        <button (click)="showRecommendedUsers()" type="button" class="btn btn-c">Recommended users</button>
+      </div>
+      -->
+    </div>
+    <br>
+    <div class="pre-scrollable">
+      <div class="list-group" *ngFor="let user of users">
+        <div class="list-group-item list-group-item-action flex-column align-items-start">
+          <div class="d-flex w-100 justify-content-between" style="text-align: center;">
+            <h3 class="mb-1"><label>{{user.fullname}}</label></h3>
+            <h4 class="mb-1">{{user.location}}</h4>
+            <i> {{user.summary_bio}}</i>
+            <br>
+            <br>
+            <span>Projects completed: <label>{{user.projects_completed}}</label> |</span>
+            <span>Rating: <label>{{user.myRating / user.ratingCount}}/5</label></span>
+            <br>
+            <br>
+          </div>
+          <button class="btn btn-c" type="button" (click)="enableShowingSkills()">Show skills</button>
+          <button class="btn btn-c" type="button" (click)="enableShowingBio()">Show bio</button>
+          <button class="btn btn-c" *ngIf="user.allow_gps" type="button" (click)="enableGpsLocation()">Show location</button>
+          <div style="float:right;">
+            <button class="btn btn-c" type="button" (click)="sendIndividualJob(user.email,user.fullname,user._id,user.phone_number)">Send job to user</button>
+          </div>
+          <br><br>
+          <div *ngIf="showSkills">
+            <div *ngFor="let categorie of user.categories" class="d-flex w-100 justify-content-between" style="text-align:center;">
+              <label>{{categorie.categorie}}</label> -
+              <div *ngFor="let skill of categorie.skills" style="display:inline;">
+                {{skill}}
+              </div>
+            </div>
+          </div>
+          <div *ngIf="showBio">
+            <div class="pre-scrollable" style="text-align: middle;">
+              <p class="mb-1">{{user.bio}}</p>
+            </div>
+          </div>
+          <div *ngIf="user.allow_gps && showGpsLocation" style="text-align:center;">
+            <sebm-google-map [latitude]="user.coordinate_latitude+0.5" [longitude]="user.coordinate_longitude-1.2">
+              <sebm-google-map-marker [latitude]="user.coordinate_latitude" [longitude]="user.coordinate_longitude"></sebm-google-map-marker>
+            </sebm-google-map>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </modal-body>
+  <modal-footer>
+    <button type="button" class="btn btn-c" (click)="usersListModal.close()">Close</button>
+  </modal-footer>
+</modal>
+
+<modal #alert>
+  <modal-header [show-close]="true">
+    <h4 class="modal-title">Alert</h4>
+  </modal-header>
+  <modal-body>
+    <div class="d-flex w-100 justify-content-between" style="text-align: center;">
+      <h4 class="mb-1">{{alert_string}}</h4>
+    </div>
+  </modal-body>
+  <modal-footer>
+    <button type="button" class="btn btn-c" (click)="alert.close()">Ok</button>
+  </modal-footer>
+</modal>
+
+
+<modal #coinsalert>
+  <modal-header [show-close]="true">
+    <h4 class="modal-title">Alert</h4>
+  </modal-header>
+  <modal-body>
+    <div class="d-flex w-100 justify-content-between" style="text-align: center;">
+      <h4 class="mb-1">You do not have enough coins to offer such amount for paying a job.</h4>
+      <h5>Please, buy more coins!</h5>
+    </div>
+  </modal-body>
+  <modal-footer>
+    <button type="button" class="btn btn-c" (click)="coinsalert.close()">Ok</button>
+  </modal-footer>
+</modal>
+
+<modal #recommendationModal>
+  <modal-header [show-close]="true">
+    <h4 class="modal-title">We recommend these users for collaboration</h4>
+  </modal-header>
+  <modal-body>
+    <br>
+    <div class="pre-scrollable">
+      <div class="list-group" *ngFor="let user of recommendedUsers">
+        <a class="list-group-item list-group-item-action flex-column align-items-start">
+          <div class="d-flex w-100 justify-content-between" style="text-align: center;">
+            <h3 class="mb-1"><label>{{user.fullname}}</label></h3>
+            <h4 class="mb-1">{{user.location}}</h4>
+            <small><label>Summary description:</label> {{user.summary_bio}}</small>
+            <br>
+            <small><label>Projects_completed:</label> {{user.projects_completed}}</small><br>
+          </div>
+          <div *ngFor="let categorie of user.categories" class="d-flex w-100 justify-content-between" style="text-align:center;">
+            <label>{{categorie.categorie}}</label> -
+            <div *ngFor="let skill of categorie.skills" style="display:inline;">
+              {{skill}}
+            </div>
+          </div>
+          <div *ngIf="user.allow_gps" style="text-align:center;">
+            <br>
+            <label>Users location</label>
+            <br>
+            <sebm-google-map [latitude]="user.coordinate_latitude+0.5" [longitude]="user.coordinate_longitude-1.2">
+              <sebm-google-map-marker [latitude]="user.coordinate_latitude" [longitude]="user.coordinate_longitude"></sebm-google-map-marker>
+            </sebm-google-map>
+          </div>
+          <div class="pre-scrollable" style="text-align: middle;">
+            <p class="mb-1"><label>User's bio:</label> {{user.bio}}</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </modal-body>
+  <modal-footer>
+    <button type="button" class="btn" (click)="recommendationModal.close()">Ok</button>
+  </modal-footer>
+</modal>
+
+
+
+
+<!-- Style for fixed button -->
+<style>
+  #new_job_inner {
+    height: 90px;
+    width: 90px;
+    left: 91%;
+    top: 84%;
+    z-index: 2;
+    display: block;
+    position: fixed;
+    background-color: transparent;
+  }
+
+  #new_job_content {
+    font-size: 1.6em;
+    position: relative;
+    transform: translate(-50%, -50%);
+    left: 55%;
+    top: 52%;
+    background-color: transparent;
+  }
+</style>
+<!-- Fixed button -->
+<div data-toggle="modal" data-target="#myModal" id="new_job_inner" class="container-fluid">
+  <div id="new_job_content" class="container-fluid">
+    <a style="color:#366cc1;" (mouseenter)="mouseEnter()" (mouseleave)="mouseLeave()" onclick="scroll(0,0)"><span class="glyphicon glyphicon-chevron-up" (click)="$.fn.fullpage.moveTo(1, 0);"></span></a>
+    <span *ngIf="upArrow">Up</span>
+  </div>
+</div>

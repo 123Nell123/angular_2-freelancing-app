@@ -1,0 +1,64 @@
+<div class="row">
+  <div class="col-sm-1">
+  </div>
+  <div class="col-sm-10">
+    <h2>My stats by categories</h2>
+    <hr>
+  </div>
+  <div class="col-sm-1">
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-1">
+  </div>
+  <div class="col-sm-3" style="text-align:center;">
+    <h3>Offers</h3>
+    <div *ngIf="showOffersData" style="display: block">
+      <canvas baseChart
+    [data]="doughnutOffersData"
+    [labels]="doughnutOffersLabels"
+    [chartType]="doughnutOffersType"
+    (chartHover)="chartHovered($event)"
+    (chartClick)="chartClicked($event)"></canvas>
+    </div>
+    <div *ngIf="!showOffersData">
+      <h3>You did not post any offers</h3>
+    </div>
+    <br>
+    <h3>My rating</h3>
+    <h3><label>{{myRating | number : '1.2-2'}}</label></h3>
+  </div>
+  <div class="col-sm-4" style="text-align:center;">
+    <h3>Submited jobs</h3>
+    <div *ngIf="showJobData" style="display: block">
+      <canvas baseChart
+    [data]="doughnutJobsData"
+    [labels]="doughnutJobsLabels"
+    [chartType]="doughnutJobsType"
+    (chartHover)="chartHovered($event)"
+    (chartClick)="chartClicked($event)"></canvas>
+    </div>
+    <div *ngIf="!showJobData">
+      <h3>You did not post any jobs yet</h3>
+    </div>
+  </div>
+  <div class="col-sm-3" style="text-align:center;">
+    <h3>Received jobs</h3>
+    <div *ngIf="showRecJobData" style="display: block">
+      <canvas baseChart
+    [data]="doughnutRecJobsData"
+    [labels]="doughnutRecJobsLabels"
+    [chartType]="doughnutRecJobsType"
+    (chartHover)="chartHovered($event)"
+    (chartClick)="chartClicked($event)"></canvas>
+    </div>
+    <div *ngIf="!showRecJobData">
+      <h3>You did not receive any jobs yet</h3>
+    </div>
+    <br>
+    <h3>Received payment to date</h3>
+    <h3><label>{{receivedPayment}} coins</label></h3>
+  </div>
+  <div class="col-sm-1">
+  </div>
+</div>

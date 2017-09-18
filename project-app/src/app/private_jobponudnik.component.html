@@ -1,0 +1,97 @@
+<style>
+  .sebm-google-map-container {
+  		height: 200px;
+  }
+</style>
+<div class="row">
+  <div class="col-sm-3">
+  </div>
+  <div class="col-sm-6">
+    <hr style="border-color: #999999;">
+  </div>
+  <div class="col-sm-3">
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-3">
+  </div>
+  <div class="col-sm-4">
+    <div class="container-fluid">
+      <h2><label>{{data.title | uppercase}}</label></h2>
+      <h2>{{data.job_date | date}}</h2>
+      <h4><span class="label label-default">{{data.categorie}}</span></h4>
+    </div>
+    <div class="container-fluid">
+      <i>
+        {{data.description}}
+      </i>
+    </div>
+    <br>
+    <div class="container-fluid">
+      <p style="color:chocolate;" *ngIf="data.payed == false">Your offer is <label>{{data.price}} coins</label></p>
+      <p style="color:chocolate;" *ngIf="data.payed == true">You paid <label>{{data.price}} coins</label></p>
+    </div>
+    <div class="container-fluid">
+      <label>Contractor</label>
+      {{data.receiver_fullname}}&nbsp;&nbsp;&nbsp;
+      <label>Contact</label>
+      {{data.receiver_phone_number}} | {{data.receiver_email}}
+    </div>
+    <div *ngIf="!data.allow_gps" class="container-fluid">
+      <label>Job location</label>
+      {{data.location}}
+    </div>
+    <div class="container-fluid">
+      <label>Date posted</label>
+      {{data.date_posted | date}}&nbsp;&nbsp;&nbsp;
+      <label>Expiration date</label>
+      {{data.expiration_date | date}}
+    </div>
+    <br>
+    <modal-gallery style="margin-left:15px;" [modalImages]="images"
+      [downloadable]="false"
+      [slideConfig]="{infinite: false}"
+      (hasData)="onImageLoaded($event)"
+      (close)="onCloseImageModal($event)"
+      (show)="onVisibleIndex($event)"
+      (firstImage)="onIsFirstImage($event)"
+      (lastImage)="onIsLastImage($event)">
+    </modal-gallery>
+    <div class="container-fluid">
+
+      <br>
+      <div *ngIf="data.accepted && data.payed == false">
+        <br>
+        <label>Rate the freelancer's work, then click 'Pay' button &nbsp;&nbsp;&nbsp;</label>
+        
+        <span style="font-weight: bold;color:chocolate;"  (mouseover)="firstStar()" [ngClass]="['glyphicon',firstStarStyle]"></span>
+        <span style="font-weight: bold;color:chocolate;"  (mouseover)="secondStar()" [ngClass]="['glyphicon',secondStarStyle]"></span>
+        <span style="font-weight: bold;color:chocolate;"  (mouseover)="thirdStar()" [ngClass]="['glyphicon',thirdStarStyle]"></span>
+        <span style="font-weight: bold;color:chocolate;"  (mouseover)="forthStar()" [ngClass]="['glyphicon',forthStarStyle]"></span>
+        <span style="font-weight: bold;color:chocolate;"  (mouseover)="fifthStar()" [ngClass]="['glyphicon',fifthStarStyle]"></span>
+      </div>
+
+    </div>
+  </div>
+  <div class="col-sm-2">
+    <div class="container-fluid" style="text-align:center;">
+      <h4 style="color: red;" *ngIf="data.accepted == true && data.payed == false"><label>Accepted job</label></h4>
+      <h4 style="color: #0066cc;" *ngIf="data.accepted == false && data.payed == false"><label>Pending job</label></h4>
+      <h4 style="ccolor: black;" *ngIf="data.accepted == true && data.payed == true"><label>Paid job</label></h4>
+      <br>
+      <sebm-google-map *ngIf="data.allow_gps" [latitude]="data.coordinate_latitude" [longitude]="data.coordinate_longitude">
+        <sebm-google-map-marker   [latitude]="data.coordinate_latitude" [longitude]="data.coordinate_longitude" ></sebm-google-map-marker>
+      </sebm-google-map>
+      <br>
+      <div *ngIf="data.allow_gps" class="container-fluid">
+        <label>Job location</label>
+        {{data.location}}
+      </div>
+      <button style="margin:5px;" type="button" class="btn" *ngIf="data.accepted && data.payed == false && this.saveRating" (click)="payAcceptedPrivateJob()">Pay</button>
+    </div>
+
+  </div>
+  <div class="col-sm-4">
+  </div>
+</div>
+<br>

@@ -1,0 +1,84 @@
+<style>
+  .sebm-google-map-container {
+  		height: 200px;
+  }
+
+  .btn-c:hover {
+    background-color: #f2f2f2;
+  }
+</style>
+<div class="row">
+  <div class="col-sm-3">
+  </div>
+  <div class="col-sm-6">
+    <hr style="border-color: #999999;">
+  </div>
+  <div class="col-sm-3">
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-3">
+  </div>
+  <div class="col-sm-4">
+    <div class="container-fluid">
+      <h2><label>{{data.title | uppercase}}</label></h2>
+      <h2>{{data.job_date | date}}</h2>
+      <h4><span class="label label-default">{{data.categorie}}</span></h4>
+    </div>
+    <div class="container-fluid">
+      <i>
+        {{data.description}}
+      </i>
+    </div>
+    <br>
+    <div class="container-fluid">
+      <p style="color:chocolate;">Received offer is <label>{{data.price}} coins</label></p>
+    </div>
+    <div class="container-fluid">
+      <label>Client</label> {{data.sender_fullname}}&nbsp;&nbsp;&nbsp;
+      <label>Contact</label>
+      {{data.sender_phone_number}} | {{data.sender_email}}
+    </div>
+    <div class="container-fluid">
+      <label>Date posted</label>
+      {{data.date_posted | date}}
+    </div>
+
+    <br>
+    <modal-gallery [modalImages]="images"
+      [downloadable]="false"
+      [slideConfig]="{infinite: false}"
+      (hasData)="onImageLoaded($event)"
+      (close)="onCloseImageModal($event)"
+      (show)="onVisibleIndex($event)"
+      (firstImage)="onIsFirstImage($event)"
+      (lastImage)="onIsLastImage($event)">
+    </modal-gallery>
+    <div class="container-fluid">
+      <br>
+      <button type="button" class="btn btn-c" *ngIf="!data.accepted && data.received_payment == false" (click)="acceptJob()">Accept</button>
+    </div>
+
+
+  </div>
+  <div class="col-sm-2">
+    <div style="text-align:center;" class="container-fluid">
+      <h4 style="color: red;" *ngIf="data.accepted == true && data.received_payment == false"><label>Accepted and waiting payment</label></h4>
+      <h4 style="color: #0066cc;" *ngIf="data.accepted == false && data.received_payment == false"><label>Pending job</label></h4>
+      <h4 style="ccolor: black;" *ngIf="data.accepted == true && data.received_payment == true"><label>Received payment</label></h4>
+      <br>
+      <sebm-google-map *ngIf="data.allow_gps" [latitude]="data.coordinate_latitude" [longitude]="data.coordinate_longitude">
+        <sebm-google-map-marker   [latitude]="data.coordinate_latitude" [longitude]="data.coordinate_longitude" ></sebm-google-map-marker>
+      </sebm-google-map>
+      <br>
+      <div class="container-fluid">
+        <label>Location</label>
+        {{data.location}}
+      </div>
+    </div>
+
+  </div>
+  <div class="col-sm-4">
+  </div>
+</div>
+<br>

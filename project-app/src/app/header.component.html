@@ -1,0 +1,111 @@
+<style>
+.sebm-google-map-container {
+		height: 300px;
+}
+
+.btn-c:hover {
+	background-color: #f2f2f2;
+}
+</style>
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+                <button type="button"
+                        class="navbar-toggle collapsed"
+                        (click)="toggleState()">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" [routerLink]="['/mainpage/home']">L <span class="glyphicon glyphicon-knight"></span> n c e r</a>
+        </div>
+         <div class="collapse navbar-collapse"
+              [ngClass]="{ 'in': isIn }">
+            <ul class="nav navbar-nav navbar-left">
+              <li><a><p style="color:#86C7F3;">{{user_fullname}}</p></a></li>
+              <li><a [routerLink]="['/mainpage/ponudnik']" name="signup_button"><span class="glyphicon glyphicon-cloud-download"></span> Offer jobs</a></li>
+              <li><a [routerLink]="['/mainpage/povprasevalec']" name="signup_button"><span class="glyphicon glyphicon-cloud-upload"></span> Find a job</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <li *ngIf="coins != null"><a><p style="color:#86C7F3;"><span class="glyphicon glyphicon-tint"></span> Coins: {{coins}}</p></a></li>
+              <li><a (click)="buyMoreCoins()" style="color:white;cursor: pointer; cursor: hand;">Buy coins</a></li>
+              <li><a (click)="showNotifications()" style="cursor: pointer; cursor: hand;"> Notifications</a></li>
+              <li><a (click)="settingsClick()" [routerLink]="['/mainpage/settings']"> User settings</a></li>
+              <li><a (click)="helpModal.open()" data-toggle="modal" data-target="#helpModal" name="signup_button" style="cursor: pointer; cursor: hand;"><span class="glyphicon glyphicon-question-sign"></span> Help</a></li>
+     	        <li><a [routerLink]="['/firstpage']"  (click)="clearSession()"><span class="glyphicon glyphicon-off"></span> Logout</a></li> <!-- Needs cookie session deletion... -->
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<modal #helpModal>
+    <modal-header [show-close]="true">
+        <h4 class="modal-title">Help</h4>
+    </modal-header>
+    <modal-body>
+      <p>Click <label>Offer jobs</label> to start looking for freelancers by publishing a job - other users, skilled for particular task, will be able to see the job ad and post their offer. You can accept any offer till expiration job time.</p>
+      <p>Click <label>Find a job</label> if you are looking for a job. Browse through all posted jobs and offer your service to other users</p>
+    </modal-body>
+    <modal-footer>
+      <button type="button" class="btn btn-c" (click)="helpModal.close()">Close</button>
+    </modal-footer>
+</modal>
+
+<modal #buyCoins>
+    <modal-header [show-close]="true">
+        <h4 class="modal-title">Coins purchase</h4>
+    </modal-header>
+    <modal-body>
+      <p>You current coins state: {{coins}}</p>
+      <label>How much would you like to purchase?</label>
+      <input class="form-control" type="number" #coinsInput>
+    </modal-body>
+    <modal-footer>
+      <button type="button" class="btn btn-primary" (click)="purchaseCoins()">Purchase</button>
+      <button type="button" class="btn btn-c" (click)="buyCoins.close()">Cancel</button>
+    </modal-footer>
+</modal>
+
+
+
+<modal #notificationsModal>
+    <modal-header [show-close]="true">
+        <h4 class="modal-title">Notifications</h4>
+    </modal-header>
+    <modal-body>
+      <div *ngIf="notifications.length > 0" class="pre-scrollable">
+        <ul class="list-group">
+          <li class="list-group-item" *ngFor="let notification of notifications">
+            {{notification}}
+          </li>
+        </ul>
+      </div>
+			<div *ngIf="notifications.length == 0">
+				You haven't received any notifications yet
+			</div>
+    </modal-body>
+    <modal-footer>
+      <button type="button" class="btn btn-c" (click)="notificationsModal.close()">Ok</button>
+    </modal-footer>
+</modal>
+
+<modal #skillPrompt>
+	<modal-header [show-close]="true">
+			<h4 class="modal-title">We need your help</h4>
+	</modal-header>
+	<modal-body>
+		<div *ngIf="rare_skill != null" class="text-align:center;">
+			<h4>We are looking for new people with experience in <label>{{rare_skill.name}}</label>
+			</h4>
+			<h5>Do you know any? Send an email to them</h5>
+			<input type="text" class="form-control" #emailToSend>
+			<br>
+			<button type="button" class="btn btn-primary" (click)="sendEmail()">Submit</button>
+		</div>
+	</modal-body>
+	<modal-footer>
+		<button type="button" class="btn btn-c" (click)="skillPrompt.close()">Close</button>
+	</modal-footer>
+</modal>

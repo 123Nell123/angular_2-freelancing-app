@@ -1,0 +1,68 @@
+<div class="grid container" style="margin-top:150px;width:100%; border-radius: 25px; background: white; border: 2px solid #525C91;">
+<div class="row">
+	<div class="col-sm-4">
+	</div>
+	<div class="col-sm-4" style="text-align:center;">
+		<h2>Login</h2>
+	</div>
+	<div class="col-sm-4">
+	</div>
+</div>
+<br><br>
+<div class="row">
+	<div class="col-sm-12">
+    <label for="login_username">E-mail </label>
+    <input type="text" class="form-control" id="login_username" placeholder="Your e-mail address" #email>
+	</div>
+</div>
+<br>
+<div class="row">
+	<div class="col-sm-12">
+    <label for="login_password">Password </label>
+    <input type="password" class="form-control" id="login_passowrd" placeholder="Your password" #password>
+	</div>
+</div>
+<br><br>
+<div class="row">
+	<div class="col-sm-12" style="text-align:center;">
+		<button (click)="loginClick()" class="btn btn-primary" style="margin-bottom:20px;">Login</button>
+	</div>
+</div>
+
+
+
+
+<!--<div class="outer">
+  <div class="inner">
+    <div class="container-fluid" style="border-radius: 25px; background: white; border: 2px solid #525C91;">
+      <form>
+        <h2>Login</h2>
+        <hr>
+        <div class="form-group">
+          <label for="login_username">E-mail </label>
+          <input type="text" class="form-control" id="login_username" placeholder="Your e-mail address" #email>
+        </div>
+        <div class="form-group">
+          <label for="login_password">Password </label>
+          <input type="password" class="form-control" id="login_passowrd" placeholder="Your password" #password>
+        </div>
+        <div class="form-group" style="text-align:center;">
+          <button (click)="loginClick()" class="btn btn-primary">Login</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>-->
+
+
+<modal #modal>
+  <modal-header>
+    <h4 class="modal-title">Notification</h4>
+    </modal-header>
+    <modal-body>
+      {{notification}}
+  </modal-body>
+  <modal-footer>
+<button type="button" class="btn btn-primary" (click)="modal.close()">Ok</button>
+  </modal-footer>
+</modal>

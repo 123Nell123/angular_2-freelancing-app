@@ -1,0 +1,129 @@
+<style>
+  .sebm-google-map-container {
+  		height: 200px;
+  }
+
+  .btn-c:hover {
+    background-color: #f2f2f2;
+  }
+
+  #rcorners2 {
+    border-radius: 25px;
+    border: 2px solid #73AD21;
+    padding: 20px;
+    width: 200px;
+    height: 150px;
+}
+</style>
+<div class="row">
+  <div class="col-sm-3">
+  </div>
+  <div class="col-sm-6">
+    <hr style="border-color: #999999;">
+  </div>
+  <div class="col-sm-3">
+  </div>
+</div>
+  <div class="row">
+    <div class="col-sm-3">
+    </div>
+    <div class="col-sm-4">
+      <div class="container-fluid">
+        <h2><label>{{data.title | uppercase}}</label></h2>
+        <h2>{{data.job_date | date}}</h2>
+        <h4><span class="label label-default">{{data.categorie}}</span></h4>
+      </div>
+
+      <div class="container-fluid">
+        <i>
+          {{data.description}}
+        </i>
+      </div>
+      <br>
+
+      <div class="container-fluid">
+        <label>Date posted</label>
+        {{data.date_posted | date}}&nbsp;&nbsp;&nbsp;
+        <label>Expiration date</label>
+        {{data.expiration_date | date}}
+      </div>
+
+      <br>
+      <modal-gallery style="margin-left:15px;" [modalImages]="images"
+        [downloadable]="false"
+        [slideConfig]="{infinite: false}"
+        (hasData)="onImageLoaded($event)"
+        (close)="onCloseImageModal($event)"
+        (show)="onVisibleIndex($event)"
+        (firstImage)="onIsFirstImage($event)"
+        (lastImage)="onIsLastImage($event)">
+      </modal-gallery>
+      <br><br>
+      <button (click)="getOffers(data.job_id)" style="margin:15px;" type="button" class="btn btn-c">Offers  <span *ngIf="data.offers != null" class="badge"> {{data.offers.length}}</span>
+        <span *ngIf="data.offers == null" class="badge"> 0</span>
+      </button>
+    </div>
+    <div class="col-sm-2">
+      <div class="container-fluid" style="text-align:center;">
+        <h4 style="color: red;" *ngIf="data.finished == true && data.payed == false"><label>Accepted offer</label></h4>
+        <h4 style="color: #0066cc;" *ngIf="data.finished == false && data.payed == false"><label>Pending job</label></h4>
+        <h4 style="color: black;" *ngIf="data.finished == true && data.payed == true"><label>Paid job</label></h4>
+        <br>
+        <sebm-google-map *ngIf="data.allow_gps" [latitude]="data.coordinate_latitude" [longitude]="data.coordinate_longitude">
+          <sebm-google-map-marker   [latitude]="data.coordinate_latitude" [longitude]="data.coordinate_longitude" ></sebm-google-map-marker>
+        </sebm-google-map>
+        <br>
+        <div class="container-fluid">
+          <label>Job location</label>
+          {{data.location}}
+        </div>
+        <br>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+      <div class="col-sm-3">
+      </div>
+      <div class="col-sm-6">
+        <div class="pre-scrollable" *ngIf="offers_visible">
+        <ul style="padding-top: 20px;" class="list-group">
+          <li class="list-group-item" *ngFor="let offer of offers">
+            <div class="col-sm-5">
+              <h4 class="list-group-item-heading">User {{offer.author}} offered <label>{{offer.price}}</label> coins</h4>
+              <label *ngIf="offer.accepted && data.payed == false" style="color:red;">
+                Accepted
+              </label>
+              <label style="float:right;" *ngIf="offer.accepted && data.payed == true" style="color:chocolate;">
+                Paid
+              </label>
+            </div>
+            <div class="container-fluid text-right">
+              <button *ngIf="can_accept == true" (click)="acceptOffer(data._id,offer._id,data.title,offer.offer_id)" type="button" class="btn btn-c">Accept</button>
+              <div *ngIf="offer.accepted && data.payed == false">
+                <label>Rate the freelancer's work, then click 'Pay' button &nbsp;&nbsp;&nbsp;</label>
+                <span style="font-weight: bold;color:chocolate;" (mouseover)="firstStar()" [ngClass]="['glyphicon',firstStarStyle]"></span>
+                <span style="font-weight: bold;color:chocolate;" (mouseover)="secondStar()" [ngClass]="['glyphicon',secondStarStyle]"></span>
+                <span style="font-weight: bold;color:chocolate;" (mouseover)="thirdStar()" [ngClass]="['glyphicon',thirdStarStyle]"></span>
+                <span style="font-weight: bold;color:chocolate;" (mouseover)="forthStar()" [ngClass]="['glyphicon',forthStarStyle]"></span>
+                <span style="font-weight: bold;color:chocolate;" (mouseover)="fifthStar()" [ngClass]="['glyphicon',fifthStarStyle]"></span>
+              </div>
+              <button *ngIf="offer.accepted && data.payed == false" type="button" class="btn btn-c" (click)="payClick(data.title,offer.price)">Pay</button>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+</div>
+<br>
+
+<modal #notificationModal>
+    <modal-header [show-close]="true">
+        <h4 class="modal-title">Notifications</h4>
+    </modal-header>
+    <modal-body>
+      {{notification}}
+    </modal-body>
+    <modal-footer>
+      <button type="button" class="btn btn-primary" (click)="notificationModal.close()">Ok</button>
+    </modal-footer>
+</modal>

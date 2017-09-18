@@ -1,0 +1,28 @@
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+                <button type="button" 
+                        class="navbar-toggle collapsed"
+                        (click)="toggleState()">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" onclick="$.fn.fullpage.moveTo(1, 0);">L <span class="glyphicon glyphicon-knight"></span> n c e r</a>
+        </div>
+         <div class="collapse navbar-collapse"
+              [ngClass]="{ 'in': isIn }">
+            <p class="navbar-text">User currency: _DATABIND_MONEY</p>
+            <ul class="nav navbar-nav navbar-left">
+                <li><a href="#">User settings</a></li>
+                <li><a href="#">Help</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a [routerLink]="['/firstpage/login']" name="login_button" onclick="$.fn.fullpage.moveTo(2, 0);"><span class="glyphicon glyphicon-log-in"></span> Switch mode</a></li>
+     	        <li><a [routerLink]="['/firstpage/signup']" name="signup_button" onclick="$.fn.fullpage.moveTo(3, 0);"><span class="glyphicon glyphicon-user"></span> Register</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<!-- main html must have router-outlet defined after using this component! -->

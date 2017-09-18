@@ -1,0 +1,84 @@
+<style>
+	.sebm-google-map-container {
+		height: 300px;
+		margin-left: auto;
+		margin-right: auto;
+	}
+</style>
+
+<div class="grid container" style="margin-top:20px;width:100%; border-radius: 25px; background: white; border: 2px solid #525C91;">
+	<div class="row">
+		<div class="col-sm-4">
+		</div>
+		<div class="col-sm-4" style="text-align:center;">
+			<h2>Registration</h2>
+		</div>
+		<div class="col-sm-4">
+		</div>
+
+	</div>
+	<div class="grid container col-sm-6">
+		<div class="row">
+			<div class="col-sm-12">
+				<label for="login_username">E-mail </label>
+				<input type="email" class="form-control" placeholder="Your e-mail address" #email>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-12">
+				<label for="login_password" style="padding-top:3px;">Password </label>
+				<input type="password" class="form-control" placeholder="New password - minimum 8 characters" #password>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-12">
+				<label for="login_password" style="padding-top:3px;">Full name </label>
+				<input type="text" class="form-control" placeholder="Your full name" #fullname>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-12">
+				<label for="login_password" style="padding-top:3px;">Location </label>
+				<input type="text" class="form-control" placeholder="Your location" #location>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-12">
+				<label for="login_username" style="padding-top:3px;">Phone number</label>
+				<input type="text" class="form-control" placeholder="Your phone number" #phonenumber>
+			</div>
+		</div>
+	</div>
+	<div class="grid container col-sm-6">
+		<div class="row">
+			<div class="col-sm-12" style="text-align:center;">
+				<div *ngIf="allowMaps">
+					<br>
+					<label>Move marker to your location</label>
+					<br><br>
+					<sebm-google-map [latitude]="lat" [longitude]="lng">
+						<sebm-google-map-marker [label]="position" #marker [markerDraggable]="true" (dragEnd)="signUpLocation($event)" [latitude]="lat"
+						 [longitude]="lng"></sebm-google-map-marker>
+					</sebm-google-map>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-12" style="text-align:center;">
+				<button style="margin:10px;" (click)="signUpClick()" class="btn btn-primary">Sign up</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<modal #modalNotification>
+	<modal-header [show-close]="true">
+		<h4 class="modal-title">Notification</h4>
+	</modal-header>
+	<modal-body>
+		{{notification}}
+	</modal-body>
+	<modal-footer>
+		<button type="button" class="btn btn-primary" (click)="modalNotification.close()">Ok</button>
+	</modal-footer>
+</modal>

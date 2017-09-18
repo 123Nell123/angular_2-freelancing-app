@@ -1,0 +1,103 @@
+<style>
+.sebm-google-map-container {
+  height: 200px;
+}
+
+.btn-c:hover {
+  background-color: #f2f2f2;
+}
+
+.container {
+  position: relative;
+  width: 250px;
+}
+
+.image {
+  height:auto;
+  width:auto;
+  overflow:hidden;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: auto;
+  width: auto;
+  opacity: 0;
+  transition: .5s ease;
+  background-color: white;
+}
+
+.container:hover .overlay {
+  opacity: 0.7;
+}
+
+.text {
+  color: black;
+  font-size: 20px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+}
+</style>
+<div class="list-group-item list-group-item-action flex-column align-items-start">
+  <div class="d-flex w-100 justify-content-between" style="text-align: center;">
+    <div class="row">
+      <div [ngClass]="{'col-sm-12' : data.images.length == 0 || data.allow_gps == false, 'col-sm-6': data.images.length > 0 || data.allow_gps == true}">
+        <h3 class="mb-1"><label>{{data.title}}</label></h3>
+        <br>
+        <label>Customer:</label> {{data.author}}
+        <br>
+        <label>Job date:</label> {{data.job_date | date}}
+        <br>
+        <label>Location:</label> {{data.location}}
+        <br>
+        <label>My price:</label> {{data.price}}
+        <br><br>
+        <i>{{data.description}}</i>
+
+        <br><br>
+        <label style="color:red;font-size:large;">
+          <span *ngIf="data.accepted == true && data.payed == false">Job accepted</span>
+          <span *ngIf="data.accepted == false && data.payed == false">Job not yet accepted</span>
+          <span *ngIf="data.accepted == true && data.payed == true">Job paid</span>
+        </label>
+
+      </div>
+      <div class="col-sm-6">
+        <sebm-google-map *ngIf="data.allow_gps" [latitude]="data.coordinate_latitude" [longitude]="data.coordinate_longitude">
+          <sebm-google-map-marker [latitude]="data.coordinate_latitude" [longitude]="data.coordinate_longitude"></sebm-google-map-marker>
+        </sebm-google-map>
+        <br>
+        <div style="cursor: pointer;" class="container" *ngIf="data.images.length > 0" (click)="showAllImages()">
+          <img class="img-thumbnail image" style="img-responsive" src="data:image/jpeg;base64,{{data.images[0]}}">
+          <div class="overlay">
+            <div class="text"><span class="glyphicon glyphicon-zoom-in"></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<modal #imageModal>
+  <modal-header [show-close]="true">
+    <h4 class="modal-title">All images</h4>
+  </modal-header>
+  <modal-body>
+    <div class="pre-scrollable">
+      <div *ngFor="let image of data.images">
+        <img src="data:image/jpeg;base64,{{image}}" style="max-width: 100%;">
+        <br><br>
+      </div>
+    </div>
+  </modal-body>
+  <modal-footer>
+    <button type="button" class="btn btn-c" (click)="imageModal.close()">Close</button>
+  </modal-footer>
+</modal>
